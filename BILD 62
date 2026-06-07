@@ -113,3 +113,294 @@ pot = ANTE * 2
   print(f"Pot: $(pot)")
 
 ## Deal Cards ##
+# ------------------------------
+human_hand = [deck.pop() for _ in range(5)]
+computer_hand = [deck.pop() for _ in range(5)]
+
+# ------------------------------
+# EVALUATE HANDS
+# ------------------------------
+human_score, human_tiebreak, human_type = evaluate_hand(human_hand)
+
+comp_score, comp_tiebreak, comp_type = evaluate_hand(
+    computer_hand
+)
+
+# ------------------------------
+# SHOW HUMAN THEIR HAND
+# ------------------------------
+print("\nYour Hand:")
+print(human_hand)
+print("Hand Type:", human_type)
+
+# ------------------------------
+# COMPUTER DECISION
+# ------------------------------
+if comp_type in ["High Card", "One Pair"]:
+
+    decision = random.choice(
+        ["bluff", "fold"]
+    )
+
+    if decision == "fold":
+
+        print("\nI fold.")
+
+        human_money += pot
+
+        print(
+            f"\nYou win the pot of ${pot}."
+        )
+
+        print(
+            f"Bankrolls -> "
+            f"You: ${human_money} | "
+            f"Computer: ${computer_money}"
+        )
+
+        continue
+
+    else:
+
+        computer_statement = random.choice(
+            bluff_claims
+        )
+
+        print(f'\n"{computer_statement}"')
+
+else:
+
+    computer_statement = (
+        f"I have {comp_type}"
+    )
+
+    print(f'\n"{computer_statement}"')
+
+# ------------------------------
+# PLAYER DECISION
+# ------------------------------
+while True:
+
+    action = input(
+        "\nYour move "
+        "(f=fold, c=call, r=raise): "
+    ).lower()
+
+    if action in ["f", "c", "r"]:
+        break
+
+    print("Invalid choice.")
+
+# ------------------------------
+# PLAYER FOLDS
+# ------------------------------
+if action == "f":
+
+    print("\nI call.")
+
+    computer_money += pot
+
+    print(
+        f"\nComputer wins the pot of ${pot}."
+    )
+
+    print(
+        f"Bankrolls -> "
+        f"You: ${human_money} | "
+        f"Computer: ${computer_money}"
+    )
+
+    continue
+
+# ------------------------------
+# PLAYER CALLS
+# ------------------------------
+elif action == "c":
+
+    while True:
+
+        try:
+
+            bet = int(
+                input(
+                    "Enter call amount: $"
+                )
+            )
+
+            if 0 <= bet <= human_money:
+                break
+
+            print("Invalid amount.")
+
+        except ValueError:
+            print("Enter a number.")
+
+    human_money -= bet
+
+    comp_call = min(
+        bet,
+        computer_money
+    )
+
+    computer_money -= comp_call
+
+    pot += bet + comp_call
+
+    print("\nI call.")
+
+# ------------------------------
+# PLAYER RAISES
+# ------------------------------
+elif action == "r":
+
+    while True:
+
+        try:
+
+            raise_amt = int(
+                input(
+                    "Raise by: $"
+                )
+            )
+
+            if 0 <= raise_amt <= human_money:
+                break
+
+            print("Invalid amount.")
+
+        except ValueError:
+            print("Enter a number.")
+
+    human_money -= raise_amt
+
+    comp_action = random.choice(
+        ["call", "raise"]
+    )
+
+    if comp_action == "call":
+
+        comp_call = min(
+            raise_amt,
+            computer_money
+        )
+
+        computer_money -= comp_call
+
+        pot += (
+            raise_amt +
+            comp_call
+        )
+
+        print("\nI call.")
+
+    else:
+
+        comp_raise = min(
+            10,
+            computer_money
+        )
+
+        computer_money -= comp_raise
+
+        pot += (
+            raise_amt +
+            comp_raise
+        )
+
+        print("\nI raise $10.")
+
+# ------------------------------
+# SHOWDOWN
+# ------------------------------
+print("\n================================")
+print("SHOWDOWN")
+print("================================")
+
+print("\nHuman Hand:")
+print(human_hand)
+print("Hand Type:", human_type)
+
+print("\nComputer Hand:")
+print(computer_hand)
+print("Hand Type:", comp_type)
+
+# ------------------------------
+# DETERMINE WINNER
+# ------------------------------
+if human_score > comp_score:
+
+    print("\nHuman wins!")
+
+    human_money += pot
+
+elif comp_score > human_score:
+
+    print("\nComputer wins!")
+
+    computer_money += pot
+
+else:
+
+    if human_tiebreak > comp_tiebreak:
+
+        print(
+            "\nHuman wins "
+            "(tiebreaker)!"
+        )
+
+        human_money += pot
+
+    elif comp_tiebreak > human_tiebreak:
+
+        print(
+            "\nComputer wins "
+            "(tiebreaker)!"
+        )
+
+        computer_money += pot
+
+    else:
+
+        print("\nTie!")
+
+        split = pot // 2
+
+        human_money += split
+        computer_money += (
+            pot - split
+        )
+
+# ------------------------------
+# BANKROLLS
+# ------------------------------
+print(
+    f"\nBankrolls -> "
+    f"You: ${human_money} | "
+    f"Computer: ${computer_money}"
+)
+
+# ------------------------------
+# CONTINUE?
+# ------------------------------
+choice = input(
+    "\nPress Enter for next round "
+    "or q to quit: "
+).lower()
+
+if choice == "q":
+    print("\nGame Over.")
+    break
+
+
+
+
+
+
+
+
+
+
+
+
+
+
