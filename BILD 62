@@ -1,1 +1,115 @@
 import random
+import collections from counter
+
+## Deck ##
+
+def create_deck():
+  suits = ["S","","D","C"]
+  ranks = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"]
+    return [rank + suit for suit in suits for rank in ranks]
+
+## Hand Evaluation ##
+
+def evaluate_hand(hand):
+  values_map = {
+    "2": 2, "3":3, "4":4, "5":5, "6":6, "7":7, "8":8, "9":9, "10":10, "J":11, "Q":12, "K":13, "A":14
+}
+
+    ranks = [card[:-1]for card in hand]
+    suits = [card[-1] for card in hand]
+
+    values = sorted([values_map[r] for r in ranks])
+    counts = Counter (values)
+    freq = sorted(counts.values(), reverse=True)
+  
+    flush = len(set(sits)) == 1
+    straigt = False
+
+  if values == [2, 3, 4, 5, 14]:
+    straight = True
+    values = [1, 2, 3, 4, 5]
+
+  elif len(set(values)) == 5 and max(values) - min(values) == 4:
+    straight = True
+  if straight and flush:
+    return (8, max(values), "Straigt Flush")
+  if freq == [4, 1]:
+    return (7, max(counts, key=counts.get), "Four of a Kind")
+  if freq == [3, 2]:
+    return (6, max(counts, key=counts.get), "Full House")
+  if flush:
+    return (5, max(values), "Flush")
+  if straigt: 
+    return (4, max(values), "Straigt")
+  if freq == [3, 1, 1]:
+    return (3, max(counts, key=counts.get), "Three of a Kind")
+  if freq = [2, 2, 1]:
+    pairs = [v for v, c in counts.items() if c == 2]
+    return (2, max(pairs), "Two Pair")
+  if freq == [2, 1, 1, 1]:
+    pair = [v for v, c in counts.items() if c == 2][0]
+    return (1, pair, "One Pair")
+
+  return (0, max(values), "High Card")
+
+## Game Setup ##
+
+human_money = 1000
+computer_money = 1000
+ANTE = 10
+
+deck = create_deck()
+random.shuffle(deck)
+
+round_num = 0
+
+bluff_claim = ["Your Turn"]
+
+## Main Loop ##
+
+while True:
+
+# End Conditions #
+
+  if human_money <= 0:
+    print("\nYou are out of money.")
+    break
+  if computer_money <= 0:
+    print("\nYou are out of money.")
+    break
+
+## Reshuffle every 5 rounds ##
+
+  if round_num > 0 and round_num % 5 == 0:
+    print("\n--- Deck Reshuffled ---")
+    deck = create_deck()
+    random.shuffle(deck)
+
+## Safety Reshuffle ##
+
+  if len(deck) < 10:
+    print("\n--- New Deck Created ---")
+    deck = create_deck()
+    random.shuffle(deck)
+
+  round_num += 1
+
+print("\n==============================")
+
+  print(f"Round {round_num}")
+
+print("================================")
+
+## Ante ##
+
+human_money -= ANTE
+
+computer_money -= ANTE
+
+pot = ANTE * 2
+
+  print(f"\nYour Money: $(human_money)")
+  print(f"Computer Money: $ {computer_money}")
+  print(f"Pot: $(pot)")
+
+## Deal Cards ##
